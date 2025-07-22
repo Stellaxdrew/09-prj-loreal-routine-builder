@@ -25,7 +25,13 @@
 
       <!-- Search section: combine category filter and search field -->
       <div class="search-section">
-        <select id="categoryFilter" style="max-width: 220px; margin-right: 12px;">
+        <label for="categoryFilter" class="visually-hidden"
+          >Product Category</label
+        >
+        <select
+          id="categoryFilter"
+          style="max-width: 220px; margin-right: 12px"
+        >
           <option value="" disabled selected>Choose a Category</option>
           <option value="cleanser">Cleansers</option>
           <option value="moisturizer">Moisturizers & Treatments</option>
@@ -96,7 +102,9 @@
           <a href="#">Contact</a>
         </nav>
         <!-- RTL toggle button -->
-        <button id="rtlToggle" class="rtl-toggle-btn" type="button">RTL / LTR</button>
+        <button id="rtlToggle" class="rtl-toggle-btn" type="button">
+          RTL / LTR
+        </button>
       </footer>
     </div>
 
@@ -105,19 +113,19 @@
     <script src="script.js"></script>
     <script>
       // RTL toggle logic for beginners
-      const rtlToggle = document.getElementById('rtlToggle');
-      rtlToggle.addEventListener('click', () => {
+      const rtlToggle = document.getElementById("rtlToggle");
+      rtlToggle.addEventListener("click", () => {
         const body = document.body;
-        if (body.dir === 'rtl') {
-          body.dir = 'ltr';
-          localStorage.setItem('routineBuilderDir', 'ltr');
+        if (body.dir === "rtl") {
+          body.dir = "ltr";
+          localStorage.setItem("routineBuilderDir", "ltr");
         } else {
-          body.dir = 'rtl';
-          localStorage.setItem('routineBuilderDir', 'rtl');
+          body.dir = "rtl";
+          localStorage.setItem("routineBuilderDir", "rtl");
         }
       });
       // On page load, restore direction
-      document.body.dir = localStorage.getItem('routineBuilderDir') || 'ltr';
+      document.body.dir = localStorage.getItem("routineBuilderDir") || "ltr";
     </script>
   </body>
 </html>
