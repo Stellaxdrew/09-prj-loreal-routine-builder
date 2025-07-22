@@ -357,7 +357,6 @@ generateRoutineBtn.addEventListener("click", async () => {
         body: JSON.stringify({
           model: "gpt-4o-browsing", // Use a model that supports web search
           messages: conversationHistory,
-          max_tokens: 500,
         }),
       }
     );
