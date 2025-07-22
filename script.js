@@ -271,8 +271,8 @@ function renderChatHistory() {
     })
     .map((msg) => {
       const roleClass = msg.role === "user" ? "user" : "ai";
-      // For AI, split into multiple bubbles if needed
       if (msg.role === "assistant") {
+        // Split AI response into bubbles only for new thoughts/processes
         const bubbles = formatAIResponse(msg.content);
         return bubbles
           .map(
@@ -286,25 +286,28 @@ function renderChatHistory() {
     .join("");
 }
 
-// Helper function to format AI response into multiple chat bubbles
+// Helper function to format AI response into bubbles for new thoughts/processes
 function formatAIResponse(content) {
-  // Add spacing and emojis for fun and clarity
-  // Split by newlines, steps, or bullet points
-  const lines = content.split(/\n+/).filter((line) => line.trim() !== "");
-  const bubbles = [];
-  lines.forEach((line) => {
-    // Add emoji for step/routine lines
-    if (/^\d+\./.test(line)) {
-      bubbles.push(`💡 ${line}`);
-    } else if (/^- /.test(line)) {
-      bubbles.push(`🔹 ${line.replace(/^- /, "")}`);
-    } else if (/routine|step|tips|advice/i.test(line)) {
-      bubbles.push(`✨ ${line}`);
-    } else {
-      bubbles.push(line);
-    }
-  });
-  return bubbles;
+  // Split by double newlines (new thought/process/section)
+  const sections = content.split(/\n{2,}/).filter((s) => s.trim() !== "");
+  // Add spacing for readability inside each bubble
+  return sections.map((section) =>
+    section
+      .split("\n")
+      .map((line) => {
+        // Add subtle formatting for steps or bullet points
+        if (/^\d+\./.test(line)) {
+          return `<span style="display:block;margin-bottom:6px;">${line}</span>`;
+        } else if (/^- /.test(line)) {
+          return `<span style="display:block;margin-bottom:6px;">${line.replace(
+            /^- /,
+            ""
+          )}</span>`;
+        }
+        return `<span style="display:block;margin-bottom:6px;">${line}</span>`;
+      })
+      .join("")
+  );
 }
 
 // Get reference to the "Generate Routine" button
@@ -331,7 +334,7 @@ generateRoutineBtn.addEventListener("click", async () => {
     {
       role: "system",
       content:
-        "You are a helpful beauty routine assistant with access to real-time web search. When answering, include current information, links, and citations about L'Oréal products or routines if available. Be clear, concise, and friendly for beginners. Keep responses short and easy to read.",
+        "You are a fun helpful emoji-loving beauty routine assistant with access to real-time web search. When answering, include current information, descriptions, and citations about L'Oréal products or routines if available. When asking about routines, specify whether they would like a morning routine or night routine. Be clear, concise, and friendly for beginners. Keep responses short and easy to read. Make sure every response a follow-up question for the user. Do not start a new thought if it cannot be completed.",
     },
     {
       role: "user",
@@ -346,7 +349,7 @@ generateRoutineBtn.addEventListener("click", async () => {
   chatWindow.innerHTML = `<div class="chat-bubble ai"><em>Generating your routine...</em></div>`;
 
   try {
-    // Use the browsing-enabled model
+    // Use max_tokens: 1000 for complete, concise responses
     const response = await fetch(
       "https://loral-chatbot.stella-nyangamoi.workers.dev/",
       {
@@ -355,7 +358,7 @@ generateRoutineBtn.addEventListener("click", async () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o-browsing", // Use a model that supports web search
+          model: "gpt-4o-browsing",
           messages: conversationHistory,
         }),
       }
@@ -405,7 +408,7 @@ chatForm.addEventListener("submit", async (e) => {
   chatWindow.innerHTML += `<div class="chat-bubble ai"><em>Thinking...</em></div>`;
 
   try {
-    // Use the browsing-enabled model
+    // Use max_tokens: 1000 for complete, concise responses
     const response = await fetch(
       "https://loral-chatbot.stella-nyangamoi.workers.dev/",
       {
@@ -414,9 +417,8 @@ chatForm.addEventListener("submit", async (e) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gpt-4o-browsing", // Use a model that supports web search
+          model: "gpt-4o-browsing",
           messages: conversationHistory,
-          max_tokens: 500,
         }),
       }
     );
@@ -444,6 +446,12 @@ chatForm.addEventListener("submit", async (e) => {
 });
 
 /* On page load, restore selected products from localStorage */
+loadSelectedProducts();
+updateSelectedProductsList();
+loadSelectedProducts();
+updateSelectedProductsList();
+loadSelectedProducts();
+updateSelectedProductsList();
 loadSelectedProducts();
 updateSelectedProductsList();
 loadSelectedProducts();
